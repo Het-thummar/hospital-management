@@ -59,7 +59,9 @@ urlpatterns = [
     
     # Logout
     path('logout/', views.logout_view, name='logout'),
-    path('login/', views.universal_login, name='universal-login'),
+    path('patientlogin/', views.patientlogin, name='patientlogin'),
+    path('adminlogin/', views.adminlogin, name='adminlogin'),
+    path('doctorlogin/', views.doctorlogin, name='doctorlogin'),
 ]
 
 # Add static files serving during development

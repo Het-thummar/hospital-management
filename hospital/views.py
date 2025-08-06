@@ -36,21 +36,31 @@ def patientlogin(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            # Admin check
+            if user.is_superuser or user.groups.filter(name='Admin').exists():
+                login(request, user)
+                return redirect('admin-dashboard')
+            # Doctor check
+            try:
+                doctor = Doctor.objects.get(user=user)
+                if doctor.is_approved and doctor.status:
+                    login(request, user)
+                    return redirect('doctor-dashboard')
+            except Doctor.DoesNotExist:
+                pass
+            # Patient check
             try:
                 patient = Patient.objects.get(user=user)
-                if patient.status:  # Check if patient is active
+                if patient.status:
                     login(request, user)
                     return redirect('patient-dashboard')
-                else:
-                    messages.error(request, 'Your account is not approved yet. Please wait for admin approval.')
             except Patient.DoesNotExist:
-                messages.error(request, 'You are not registered as a patient.')
+                pass
+            messages.error(request, 'Your account is not approved or does not have a valid role.')
         else:
             messages.error(request, 'Invalid username or password.')
-    
     return render(request, 'hospital/patientlogin.html')
 
 def patientsignup(request):
@@ -82,25 +92,31 @@ def adminlogin(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            # Admin check
             if user.is_superuser or user.groups.filter(name='Admin').exists():
                 login(request, user)
                 return redirect('admin-dashboard')
-            else:
-                try:
-                    admin_approval = AdminApproval.objects.get(user=user)
-                    if admin_approval.is_approved:
-                        login(request, user)
-                        return redirect('admin-dashboard')
-                    else:
-                        messages.error(request, 'Your admin account is not approved yet.')
-                except AdminApproval.DoesNotExist:
-                    messages.error(request, 'You are not registered as an admin.')
+            # Doctor check
+            try:
+                doctor = Doctor.objects.get(user=user)
+                if doctor.is_approved and doctor.status:
+                    login(request, user)
+                    return redirect('doctor-dashboard')
+            except Doctor.DoesNotExist:
+                pass
+            # Patient check
+            try:
+                patient = Patient.objects.get(user=user)
+                if patient.status:
+                    login(request, user)
+                    return redirect('patient-dashboard')
+            except Patient.DoesNotExist:
+                pass
+            messages.error(request, 'Your account is not approved or does not have a valid role.')
         else:
             messages.error(request, 'Invalid username or password.')
-    
     return render(request, 'hospital/adminlogin.html')
 
 def adminsignup(request):
@@ -123,52 +139,6 @@ def adminsignup(request):
     return render(request, 'hospital/adminsignup.html', {'form': form})
 
 def doctorlogin(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            try:
-                doctor = Doctor.objects.get(user=user)
-                if doctor.is_approved and doctor.status:
-                    login(request, user)
-                    return redirect('doctor-dashboard')
-                else:
-                    messages.error(request, 'Your doctor account is not approved yet.')
-            except Doctor.DoesNotExist:
-                messages.error(request, 'You are not registered as a doctor.')
-        else:
-            messages.error(request, 'Invalid username or password.')
-    
-    return render(request, 'hospital/doctorlogin.html')
-
-def doctorsignup(request):
-    if request.method == 'POST':
-        user_form = DoctorUserForm(request.POST)
-        doctor_form = DoctorForm(request.POST, request.FILES)
-        
-        if user_form.is_valid() and doctor_form.is_valid():
-            user = user_form.save()
-            
-            doctor = doctor_form.save(commit=False)
-            doctor.user = user
-            doctor.save()
-            
-            messages.success(request, 'Doctor registration successful! Please wait for admin approval.')
-            return redirect('doctorlogin')
-        else:
-            messages.error(request, 'Please correct the errors below.')
-    else:
-        user_form = DoctorUserForm()
-        doctor_form = DoctorForm()
-    
-    return render(request, 'hospital/doctorsignup.html', {
-        'userForm': user_form,
-        'doctorForm': doctor_form
-    })
-
-def universal_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -197,7 +167,32 @@ def universal_login(request):
             messages.error(request, 'Your account is not approved or does not have a valid role.')
         else:
             messages.error(request, 'Invalid username or password.')
-    return render(request, 'hospital/universal_login.html')
+    return render(request, 'hospital/doctorlogin.html')
+
+def doctorsignup(request):
+    if request.method == 'POST':
+        user_form = DoctorUserForm(request.POST)
+        doctor_form = DoctorForm(request.POST, request.FILES)
+        
+        if user_form.is_valid() and doctor_form.is_valid():
+            user = user_form.save()
+            
+            doctor = doctor_form.save(commit=False)
+            doctor.user = user
+            doctor.save()
+            
+            messages.success(request, 'Doctor registration successful! Please wait for admin approval.')
+            return redirect('doctorlogin')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        user_form = DoctorUserForm()
+        doctor_form = DoctorForm()
+    
+    return render(request, 'hospital/doctorsignup.html', {
+        'userForm': user_form,
+        'doctorForm': doctor_form
+    })
 
 # Patient Views
 @login_required
