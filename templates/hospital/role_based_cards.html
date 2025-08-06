@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 font-sans py-10">
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-6 max-w-7xl mx-auto">
+    
+    {% if user.is_authenticated %}
+      <!-- Show cards based on user role -->
+      
+      {% if user.is_staff %}
+        <!-- Admin Card - Only show if user is admin -->
+        <div class="bg-white rounded-xl overflow-hidden flex flex-col max-w-sm mx-auto transform transition duration-300 hover:scale-105 hover:shadow-2xl shadow-2xl">
+          <div class="overflow-hidden">
+            <img src="{% static 'images/admin.png' %}" alt="Admin"
+              class="h-80 w-full object-cover transform transition duration-500 hover:scale-110">
+          </div>
+          <div class="p-6 flex flex-col flex-grow text-center">
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">ADMIN DASHBOARD</h2>
+            <a href="{% url 'admin-click' %}"
+              class="mt-auto inline-block bg-black text-white py-2 px-5 rounded transition duration-300 ease-in-out transform hover:bg-gray-800 hover:scale-105 hover:shadow-lg">View Dashboard</a>
+          </div>
+        </div>
+      {% endif %}
+      
+      {% if not user.is_staff %}
+        <!-- Check if user is a doctor -->
+        {% for doctor in doctors %}
+          {% if doctor.user == user %}
+            <div class="bg-white rounded-xl overflow-hidden flex flex-col max-w-sm mx-auto transform transition duration-300 hover:scale-105 hover:shadow-2xl shadow-2xl">
+              <div class="overflow-hidden">
+                <img src="{% static 'images/doctor.png' %}" alt="Doctor"
+                  class="h-80 w-full object-cover transform transition duration-500 hover:scale-110">
+              </div>
+              <div class="p-6 flex flex-col flex-grow text-center">
+                <h2 class="text-2xl font-bold text-gray-700 mb-4">DOCTOR DASHBOARD</h2>
+                <a href="{% url 'doctor-click' %}"
+                  class="mt-auto inline-block bg-black text-white py-2 px-5 rounded transition duration-300 ease-in-out transform hover:bg-gray-800 hover:scale-105 hover:shadow-lg">View Dashboard</a>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+        
+        <!-- Check if user is a patient -->
+        {% for patient in patients %}
+          {% if patient.user == user %}
+            <div class="bg-white rounded-xl overflow-hidden flex flex-col max-w-sm mx-auto transform transition duration-300 hover:scale-105 hover:shadow-2xl shadow-2xl">
+              <div class="overflow-hidden">
+                <img src="{% static 'images/patient.jpg' %}" alt="Patient"
+                  class="h-80 w-full object-cover transform transition duration-500 hover:scale-110">
+              </div>
+              <div class="p-6 flex flex-col flex-grow text-center">
+                <h2 class="text-2xl font-bold text-gray-700 mb-4">PATIENT DASHBOARD</h2>
+                <a href="{% url 'patient-click' %}"
+                  class="mt-auto inline-block bg-black text-white py-2 px-5 rounded transition duration-300 ease-in-out transform hover:bg-gray-800 hover:scale-105 hover:shadow-lg">View Dashboard</a>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      
+    {% else %}
+      <!-- Show all cards for non-authenticated users -->
+      
+      <!-- ADMIN Card -->
+      <div class="bg-white rounded-xl overflow-hidden flex flex-col max-w-sm mx-auto transform transition duration-300 hover:scale-105 hover:shadow-2xl shadow-2xl">
+        <div class="overflow-hidden">
+          <img src="{% static 'images/admin.png' %}" alt="Admin"
+            class="h-80 w-full object-cover transform transition duration-500 hover:scale-110">
+        </div>
+        <div class="p-6 flex flex-col flex-grow text-center">
+          <h2 class="text-2xl font-bold text-gray-700 mb-4">ADMIN</h2>
+          <a href="{% url 'admin-click' %}"
+            class="mt-auto inline-block bg-black text-white py-2 px-5 rounded transition duration-300 ease-in-out transform hover:bg-gray-800 hover:scale-105 hover:shadow-lg">View</a>
+        </div>
+      </div>
+
+      <!-- DOCTOR Card -->
+      <div class="bg-white rounded-xl overflow-hidden flex flex-col max-w-sm mx-auto transform transition duration-300 hover:scale-105 hover:shadow-2xl shadow-2xl">
+        <div class="overflow-hidden">
+          <img src="{% static 'images/doctor.png' %}" alt="Doctor"
+            class="h-80 w-full object-cover transform transition duration-500 hover:scale-110">
+        </div>
+        <div class="p-6 flex flex-col flex-grow text-center">
+          <h2 class="text-2xl font-bold text-gray-700 mb-4">DOCTOR</h2>
+          <a href="{% url 'doctor-click' %}"
+            class="mt-auto inline-block bg-black text-white py-2 px-5 rounded transition duration-300 ease-in-out transform hover:bg-gray-800 hover:scale-105 hover:shadow-lg">View</a>
+        </div>
+      </div>
+
+      <!-- PATIENT Card -->
+      <div class="bg-white rounded-xl overflow-hidden flex flex-col max-w-sm mx-auto transform transition duration-300 hover:scale-105 hover:shadow-2xl shadow-2xl">
+        <div class="overflow-hidden">
+          <img src="{% static 'images/patient.jpg' %}" alt="Patient"
+            class="h-80 w-full object-cover transform transition duration-500 hover:scale-110">
+        </div>
+        <div class="p-6 flex flex-col flex-grow text-center">
+          <h2 class="text-2xl font-bold text-gray-700 mb-4">PATIENT</h2>
+          <a href="{% url 'patient-click' %}"
+            class="mt-auto inline-block bg-black text-white py-2 px-5 rounded transition duration-300 ease-in-out transform hover:bg-gray-800 hover:scale-105 hover:shadow-lg">View</a>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+
+</body>
+
+</html> 

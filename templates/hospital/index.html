@@ -1,0 +1,33 @@
+{% extends 'hospital/homebase.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="relative min-h-screen bg-cover bg-center" style="background-image: url('{% static "images/bg.jpg" %}')">
+  <!-- Main Heading Positioned at Top -->
+  <div class="absolute top-20 w-full text-center">
+    <h1 class="text-4xl md:text-6xl font-bold text-white animate-pulse">
+      <span class="text-shadow-lg shadow-blue-500/50">Your Health, Our Priority</span>
+    </h1>
+  </div>
+  
+  <!-- Content Below (if needed) -->
+  <div class="container mx-auto px-4 pt-60 pb-20"></div>
+</div>
+
+<!-- Cards Section -->
+<div class="py-16 bg-gray-50">
+  {% include "hospital/role_based_cards.html" %}
+</div>
+
+<style>
+  .text-shadow-lg {
+    text-shadow: 0 0 10px rgba(255,255,255,0.3), 0 0 20px rgba(59,130,246,0.5);
+  }
+  .shadow-blue-500/50 {
+    --tw-shadow-color: rgba(59, 130, 246, 0.5);
+    --tw-shadow: var(--tw-shadow-colored);
+  }
+</style>
+
+{% endblock content %}

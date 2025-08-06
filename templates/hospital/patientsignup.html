@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+{% load widget_tweaks %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Registration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .form-input {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 9999px;
+            background-color: white;
+            transition: all 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    {% include "hospital/navbar.html" %}
+    
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-6 px-8">
+                <h1 class="text-2xl font-bold">Patient Registration</h1>
+                <p class="text-sm opacity-90 mt-1">Please fill in all required fields</p>
+            </div>
+
+            <!-- Error Messages -->
+            {% if messages %}
+                <div class="p-4">
+                    {% for message in messages %}
+                        <div class="p-4 mb-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700 border border-red-200{% else %}bg-green-100 text-green-700 border border-green-200{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" class="p-8" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Left Column -->
+                    <div class="space-y-6">
+                        <!-- First Name -->
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="id_first_name">
+                                First Name *
+                            </label>
+                            <input type="text" name="{{ userForm.first_name.name }}" id="id_first_name" 
+                                   class="form-input" placeholder="John" required
+                                   value="{{ userForm.first_name.value|default:'' }}">
+                            {% if userForm.first_name.errors %}
+                                <div class="error-message">{{ userForm.first_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Username -->
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="id_username">
+                                Username *
+                            </label>
+                            <input type="text" name="{{ userForm.username.name }}" id="id_username" 
+                                   class="form-input" placeholder="johndoe123" required
+                                   value="{{ userForm.username.value|default:'' }}">
+                            {% if userForm.username.errors %}
+                                <div class="error-message">{{ userForm.username.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Address -->
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="id_address">
+                                Address *
+                            </label>
+                            <input type="text" name="{{ patientForm.address.name }}" id="id_address" 
+                                   class="form-input" placeholder="123 Main St" required
+                                   value="{{ patientForm.address.value|default:'' }}">
+                            {% if patientForm.address.errors %}
+                                <div class="error-message">{{ patientForm.address.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <!-- Last Name -->
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="id_last_name">
+                                Last Name *
+                            </label>
+                            <input type="text" name="{{ userForm.last_name.name }}" id="id_last_name" 
+                                   class="form-input" placeholder="Doe" required
+                                   value="{{ userForm.last_name.value|default:'' }}">
+                            {% if userForm.last_name.errors %}
+                                <div class="error-message">{{ userForm.last_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Password -->
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="id_password">
+                                Password *
+                            </label>
+                            <input type="password" name="{{ userForm.password.name }}" id="id_password" 
+                                   class="form-input" placeholder="••••••••" required>
+                            {% if userForm.password.errors %}
+                                <div class="error-message">{{ userForm.password.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="id_confirm_password">
+                                Confirm Password *
+                            </label>
+                            <input type="password" name="{{ userForm.confirm_password.name }}" id="id_confirm_password" 
+                                   class="form-input" placeholder="••••••••" required>
+                            {% if userForm.confirm_password.errors %}
+                                <div class="error-message">{{ userForm.confirm_password.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Mobile -->
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="id_mobile">
+                                Mobile Number *
+                            </label>
+                            <input type="tel" name="{{ patientForm.mobile.name }}" id="id_mobile" 
+                                   class="form-input" placeholder="9876543210" 
+                                   pattern="[6789][0-9]{9}" required
+                                   value="{{ patientForm.mobile.value|default:'' }}">
+                            {% if patientForm.mobile.errors %}
+                                <div class="error-message">{{ patientForm.mobile.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Symptoms -->
+                <div class="mt-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="id_symptoms">
+                        Symptoms
+                    </label>
+                    <input type="text" name="{{ patientForm.symptoms.name }}" id="id_symptoms" 
+                           class="form-input" placeholder="Fever, cough, etc."
+                           value="{{ patientForm.symptoms.value|default:'' }}">
+                    {% if patientForm.symptoms.errors %}
+                        <div class="error-message">{{ patientForm.symptoms.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Profile Picture -->
+                <div class="mt-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="id_profile_pic">
+                        Profile Picture (Optional)
+                    </label>
+                    <input type="file" name="{{ patientForm.profile_pic.name }}" id="id_profile_pic" 
+                           class="form-input" accept="image/*">
+                    {% if patientForm.profile_pic.errors %}
+                        <div class="error-message">{{ patientForm.profile_pic.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="mt-10 flex flex-col sm:flex-row justify-between items-center">
+                    <a href="{% url 'patientlogin' %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium mb-4 sm:mb-0">
+                        Already have an account? Login here
+                    </a>
+                    <button type="submit" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-full transition duration-200 shadow-md">
+                        Register Patient
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% include "hospital/footer.html" %}
+</body>
+</html>

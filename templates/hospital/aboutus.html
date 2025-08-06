@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About Us | Hospital Management System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50">
+  {% include "hospital/navbar.html" %}
+  
+  <div class="py-8">
+    <div class="max-w-4xl mx-auto px-4">
+      <!-- Alert/Title Section -->
+      <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-8 text-center">
+        <h3 class="font-bold">About Our Hospital</h3>
+      </div>
+
+      <!-- Content Section -->
+      <div class="bg-white rounded-lg shadow-md p-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-6 text-center">Our Commitment to Excellence</h1>
+        
+        <div class="space-y-6 text-gray-700">
+          <!-- Mission Section -->
+          <div class="bg-blue-50 p-6 rounded-lg">
+            <h2 class="text-2xl font-semibold text-blue-800 mb-3">Our Mission</h2>
+            <p class="text-lg">
+              To provide compassionate, high-quality healthcare services to our community through innovative technology 
+              and a patient-centered approach. We strive to make healthcare accessible, efficient, and personalized 
+              for every individual we serve.
+            </p>
+          </div>
+
+          <!-- Services Section -->
+          <div class="p-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-3">Our Services</h2>
+            <ul class="list-disc pl-6 space-y-2">
+              <li>Comprehensive patient care management</li>
+              <li>Streamlined doctor-patient communication</li>
+              <li>Efficient hospital administration tools</li>
+              <li>Digital health records system</li>
+              <li>Appointment scheduling and management</li>
+            </ul>
+          </div>
+
+          <!-- Values Section -->
+          <div class="bg-gray-50 p-6 rounded-lg">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-3">Our Core Values</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+              <div class="bg-white p-4 rounded shadow-sm">
+                <h3 class="font-bold text-blue-600 mb-2">Compassion</h3>
+                <p>Treating every patient with empathy and understanding</p>
+              </div>
+              <div class="bg-white p-4 rounded shadow-sm">
+                <h3 class="font-bold text-blue-600 mb-2">Innovation</h3>
+                <p>Continuously improving our services through technology</p>
+              </div>
+              <div class="bg-white p-4 rounded shadow-sm">
+                <h3 class="font-bold text-blue-600 mb-2">Integrity</h3>
+                <p>Maintaining the highest ethical standards</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Team Section -->
+          <div class="p-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-3">Our Team</h2>
+            <p class="mb-4">
+              Our hospital brings together a dedicated team of healthcare professionals, administrators, 
+              and technologists committed to revolutionizing healthcare delivery. With decades of combined 
+              experience, we work tirelessly to ensure seamless hospital operations and exceptional patient care.
+            </p>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-200 my-6"></div>
+        <div class="text-center">
+          <p class="text-lg text-gray-600 mb-6">Ready to experience better healthcare management?</p>
+          <a href="/" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105">
+            Return to Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% include "hospital/footer.html" %}
+</body>
+</html>

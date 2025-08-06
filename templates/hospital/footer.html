@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Footer with Circular Icons</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-gray-900 text-white">
+
+    <!-- Footer with Perfect Circles -->
+    <footer class="bg-black text-white py-8">
+      <div class="flex justify-center space-x-4 mb-6 animate-fade-in-down">
+        <!-- Facebook (Perfect Circle) -->
+        <a
+          href="https://facebook.com/sumit.luv/"
+          class="bg-[#3B5998] hover:opacity-75 transition-opacity duration-300 rounded-full w-12 h-12 flex items-center justify-center text-white text-xl"
+        >
+          <i class="fab fa-facebook-f"></i>
+        </a>
+
+        <!-- WhatsApp (Perfect Circle) -->
+        <a
+          href="https://api.whatsapp.com/send?phone=919572181024&text=Hello%20Sumit.%0d%0aHow%20are%20you%20%3f%0d%0aI%20came%20from%20your%20website.&source=&data=#"
+          class="bg-[#25d366] hover:opacity-75 transition-opacity duration-300 rounded-full w-12 h-12 flex items-center justify-center text-white text-xl"
+        >
+          <i class="fab fa-whatsapp"></i>
+        </a>
+
+        <!-- Instagram (Perfect Circle with Gradient) -->
+        <a
+          href="https://instagram.com/sumit.luv"
+          class="bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-75 transition-opacity duration-300 rounded-full w-12 h-12 flex items-center justify-center text-white text-xl"
+        >
+          <i class="fab fa-instagram"></i>
+        </a>
+
+        <!-- Twitter (Perfect Circle) -->
+        <a
+          href="https://twitter.com/sumitkumar1503"
+          class="bg-[#55ACEE] hover:opacity-75 transition-opacity duration-300 rounded-full w-12 h-12 flex items-center justify-center text-white text-xl"
+        >
+          <i class="fab fa-twitter"></i>
+        </a>
+      </div>
+
+      <div class="text-center text-sm text-gray-400 animate-fade-in-up">
+        <p>Made in India</p>
+        <p>&copy; 2020 LazyCoder</p>
+      </div>
+    </footer>
+
+    <style>
+      @keyframes fade-in-down {
+        0% {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fade-in-up {
+        0% {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .animate-fade-in-down {
+        animation: fade-in-down 0.8s ease-out forwards;
+      }
+
+      .animate-fade-in-up {
+        animation: fade-in-up 0.8s ease-out forwards;
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Hospital Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .form-input {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background-color: white;
+            transition: all 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    {% include "hospital/navbar.html" %}
+    
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-6 px-8">
+                <h1 class="text-2xl font-bold">Book Appointment</h1>
+                <p class="text-sm opacity-90 mt-1">Schedule an appointment with a doctor</p>
+            </div>
+
+            <!-- Error Messages -->
+            {% if messages %}
+                <div class="p-4">
+                    {% for message in messages %}
+                        <div class="p-4 mb-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700 border border-red-200{% else %}bg-green-100 text-green-700 border border-green-200{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" class="p-8">
+                {% csrf_token %}
+                
+                <!-- Doctor Selection -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="id_doctorId">
+                        Select Doctor *
+                    </label>
+                    <select name="{{ form.doctorId.name }}" id="id_doctorId" class="form-input" required>
+                        <option value="">Choose a doctor...</option>
+                        {% for choice in form.doctorId.field.choices %}
+                            {% if choice.0 %}
+                                <option value="{{ choice.0 }}" {% if form.doctorId.value == choice.0 %}selected{% endif %}>
+                                    {{ choice.1 }}
+                                </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    {% if form.doctorId.errors %}
+                        <div class="error-message">{{ form.doctorId.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Description -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="id_description">
+                        Appointment Description *
+                    </label>
+                    <textarea name="{{ form.description.name }}" id="id_description" 
+                              class="form-input" rows="4" 
+                              placeholder="Please describe your symptoms and reason for appointment..."
+                              required>{{ form.description.value|default:'' }}</textarea>
+                    {% if form.description.errors %}
+                        <div class="error-message">{{ form.description.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Important Notes -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-blue-800">
+                                Important Information
+                            </h3>
+                            <div class="mt-2 text-sm text-blue-700">
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li>Your appointment will be reviewed by the doctor</li>
+                                    <li>You will be notified once the doctor accepts your appointment</li>
+                                    <li>Please provide detailed symptoms for better consultation</li>
+                                    <li>Emergency cases should contact the hospital directly</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-between items-center">
+                    <a href="{% url 'patient-dashboard' %}" 
+                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                        ← Back to Dashboard
+                    </a>
+                    <button type="submit" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition duration-200 shadow-md">
+                        Book Appointment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% include "hospital/footer.html" %}
+</body>
+</html> 
