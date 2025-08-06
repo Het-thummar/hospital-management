@@ -41,6 +41,9 @@ class Patient(models.Model):
     assignedDoctor = models.ForeignKey('Doctor', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_patients')
     admitDate=models.DateField(auto_now=True)
     status=models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=False)
+    approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='approved_patients')
+    approved_at = models.DateTimeField(null=True, blank=True)
     
     @property
     def get_name(self):
