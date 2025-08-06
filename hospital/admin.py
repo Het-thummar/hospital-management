@@ -28,8 +28,8 @@ class DoctorAdmin(admin.ModelAdmin):
 admin.site.register(Doctor, DoctorAdmin)
 
 class PatientAdmin(admin.ModelAdmin):
-    list_display = ('get_name', 'mobile', 'symptoms', 'assignedDoctorId', 'admitDate', 'status', 'get_id')
-    list_filter = ('status', 'admitDate', 'assignedDoctorId')
+    list_display = ('get_name', 'mobile', 'symptoms', 'assignedDoctor', 'admitDate', 'status', 'get_id')
+    list_filter = ('status', 'admitDate', 'assignedDoctor')
     search_fields = ('user__first_name', 'user__last_name', 'user__username', 'mobile', 'symptoms')
     readonly_fields = ('get_id', 'admitDate')
     

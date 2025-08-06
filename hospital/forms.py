@@ -99,10 +99,9 @@ class PatientUserForm(BaseUserForm):
     pass
 
 class PatientForm(forms.ModelForm):
-    assignedDoctorId = forms.ModelChoiceField(
+    assignedDoctor = forms.ModelChoiceField(
         queryset=models.Doctor.objects.filter(status=True, is_approved=True),
         empty_label="Select Doctor",
-        to_field_name="user_id",
         label="Assigned Doctor",
         help_text="Select your primary doctor",
         required=False
@@ -110,7 +109,7 @@ class PatientForm(forms.ModelForm):
 
     class Meta:
         model = models.Patient
-        fields = ['address', 'mobile', 'status', 'symptoms', 'profile_pic']
+        fields = ['address', 'mobile', 'status', 'symptoms', 'assignedDoctor', 'profile_pic']
         widgets = {
             'address': forms.TextInput(attrs={
                 'placeholder': 'Address',

@@ -3,8 +3,8 @@ from django.contrib.auth import login
 from .forms import BaseUserForm, PatientForm
 
 # Create your views here.
-def home(requset) :
-    return render(requset, 'hospital/index.html')
+def home(request) :
+    return render(request, 'hospital/index.html')
 
 def aboutus(request) :
     return render(request, 'hospital/aboutus.html')

@@ -38,7 +38,7 @@ class Patient(models.Model):
     address = models.CharField(max_length=40)
     mobile = models.CharField(max_length=20,null=False)
     symptoms = models.CharField(max_length=100,null=False)
-    assignedDoctorId = models.PositiveIntegerField(null=True)
+    assignedDoctor = models.ForeignKey('Doctor', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_patients')
     admitDate=models.DateField(auto_now=True)
     status=models.BooleanField(default=False)
     
