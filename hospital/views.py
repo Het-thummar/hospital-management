@@ -41,13 +41,11 @@ def patientlogin(request):
             try:
                 patient = Patient.objects.get(user=user)
                 login(request, user)
-                print(f"Patient {user.username} logged in successfully.")
+                messages.success(request, 'Login successful!')
                 return redirect('patient-dashboard')
             except Patient.DoesNotExist:
-                print(f"User {user.username} is not a patient.")
                 messages.error(request, 'You are not registered as a patient.')
         else:
-            print("Invalid username or password.")
             messages.error(request, 'Invalid username or password.')
     return render(request, 'hospital/patientlogin.html')
 
@@ -81,10 +79,9 @@ def adminlogin(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            print(f"Admin {user.username} logged in successfully.")
+            messages.success(request, 'Login successful!')
             return redirect('admin-dashboard')
         else:
-            print("Invalid username or password.")
             messages.error(request, 'Invalid username or password.')
     return render(request, 'hospital/adminlogin.html')
 
@@ -114,13 +111,11 @@ def doctorlogin(request):
             try:
                 doctor = Doctor.objects.get(user=user)
                 login(request, user)
-                print(f"Doctor {user.username} logged in successfully.")
+                messages.success(request, 'Login successful!')
                 return redirect('doctor-dashboard')
             except Doctor.DoesNotExist:
-                print(f"User {user.username} is not a doctor.")
                 messages.error(request, 'You are not registered as a doctor.')
         else:
-            print("Invalid username or password.")
             messages.error(request, 'Invalid username or password.')
     return render(request, 'hospital/doctorlogin.html')
 
