@@ -147,6 +147,14 @@ def patient_dashboard(request):
         patient = Patient.objects.get(user=request.user)
         appointments = Appointment.objects.filter(patientId=patient.user.id).order_by('-createdDate')
         
+        # Check if new approval fields exist, if not set defaults
+        if not hasattr(patient, 'is_approved'):
+            patient.is_approved = False
+        if not hasattr(patient, 'approved_by'):
+            patient.approved_by = None
+        if not hasattr(patient, 'approved_at'):
+            patient.approved_at = None
+        
         context = {
             'patient': patient,
             'appointments': appointments,
@@ -155,6 +163,10 @@ def patient_dashboard(request):
         return render(request, 'hospital/patient_dashboard.html', context)
     except Patient.DoesNotExist:
         request.session['alert_message'] = 'Patient profile not found. Please contact support.'
+        return redirect('patientlogin')
+    except Exception as e:
+        # Fallback for any database field issues
+        request.session['alert_message'] = f'Error loading dashboard: {str(e)}'
         return redirect('patientlogin')
 
 @login_required

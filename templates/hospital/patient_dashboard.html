@@ -58,7 +58,11 @@
                     <div>
                         <h3 class="text-sm font-medium text-green-800">Account Approved</h3>
                         <p class="text-sm text-green-700">
-                            Your account was approved by {{ patient.approved_by.get_full_name|default:patient.approved_by.username }} on {{ patient.approved_at|date:'F j, Y \a\t g:i A' }}.
+                            {% if patient.approved_by and patient.approved_at %}
+                                Your account was approved by {{ patient.approved_by.get_full_name|default:patient.approved_by.username }} on {{ patient.approved_at|date:'F j, Y \a\t g:i A' }}.
+                            {% else %}
+                                Your account has been approved.
+                            {% endif %}
                         </p>
                     </div>
                 </div>
