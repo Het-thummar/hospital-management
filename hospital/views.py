@@ -38,27 +38,12 @@ def patientlogin(request):
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            # Admin check
-            if user.is_superuser or user.groups.filter(name='Admin').exists():
-                login(request, user)
-                return redirect('admin-dashboard')
-            # Doctor check
-            try:
-                doctor = Doctor.objects.get(user=user)
-                if doctor.is_approved and doctor.status:
-                    login(request, user)
-                    return redirect('doctor-dashboard')
-            except Doctor.DoesNotExist:
-                pass
-            # Patient check
             try:
                 patient = Patient.objects.get(user=user)
-                if patient.status:
-                    login(request, user)
-                    return redirect('patient-dashboard')
+                login(request, user)
+                return redirect('patient-dashboard')
             except Patient.DoesNotExist:
-                pass
-            messages.error(request, 'Your account is not approved or does not have a valid role.')
+                messages.error(request, 'You are not registered as a patient.')
         else:
             messages.error(request, 'Invalid username or password.')
     return render(request, 'hospital/patientlogin.html')
@@ -72,12 +57,8 @@ def patientsignup(request):
             patient = patient_form.save(commit=False)
             patient.user = user
             patient.save()
-            # If patient is auto-approved, log in and redirect to dashboard
-            if patient.status:
-                login(request, user)
-                return redirect('patient-dashboard')
-            messages.success(request, 'Registration successful! Please wait for admin approval.')
-            return redirect('patientlogin')
+            login(request, user)
+            return redirect('patient-dashboard')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
