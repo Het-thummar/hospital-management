@@ -99,13 +99,23 @@ class PatientUserForm(BaseUserForm):
     pass
 
 class PatientForm(forms.ModelForm):
-    assignedDoctor = forms.ModelChoiceField(
-        queryset=models.Doctor.objects.filter(status=True, is_approved=True),
-        empty_label="Select Doctor",
-        label="Assigned Doctor",
-        help_text="Select your primary doctor",
-        required=False
-    )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Safely filter doctors based on available fields
+        try:
+            # Try to filter by is_approved if the field exists
+            doctors = models.Doctor.objects.filter(status=True, is_approved=True)
+        except:
+            # Fallback to just status if is_approved doesn't exist
+            doctors = models.Doctor.objects.filter(status=True)
+        
+        self.fields['assignedDoctor'] = forms.ModelChoiceField(
+            queryset=doctors,
+            empty_label="Select Doctor",
+            label="Assigned Doctor",
+            help_text="Select your primary doctor",
+            required=False
+        )
 
     class Meta:
         model = models.Patient
@@ -134,18 +144,32 @@ class PatientForm(forms.ModelForm):
 
 # Appointment forms
 class AppointmentForm(forms.ModelForm):
-    doctorId = forms.ModelChoiceField(
-        queryset=models.Doctor.objects.filter(status=True, is_approved=True),
-        empty_label="Select Doctor",
-        to_field_name="user_id",
-        label="Doctor"
-    )
-    patientId = forms.ModelChoiceField(
-        queryset=models.Patient.objects.filter(status=True),
-        empty_label="Select Patient",
-        to_field_name="user_id",
-        label="Patient"
-    )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Safely filter doctors based on available fields
+        try:
+            doctors = models.Doctor.objects.filter(status=True, is_approved=True)
+        except:
+            doctors = models.Doctor.objects.filter(status=True)
+        
+        try:
+            patients = models.Patient.objects.filter(status=True)
+        except:
+            patients = models.Patient.objects.all()
+        
+        self.fields['doctorId'] = forms.ModelChoiceField(
+            queryset=doctors,
+            empty_label="Select Doctor",
+            to_field_name="user_id",
+            label="Doctor"
+        )
+        self.fields['patientId'] = forms.ModelChoiceField(
+            queryset=patients,
+            empty_label="Select Patient",
+            to_field_name="user_id",
+            label="Patient"
+        )
+    
     admin_scheduled_date = forms.DateField(
         widget=forms.DateInput(attrs={
             'type': 'date',
@@ -171,12 +195,20 @@ class AppointmentForm(forms.ModelForm):
         }
 
 class PatientAppointmentForm(forms.ModelForm):
-    doctorId = forms.ModelChoiceField(
-        queryset=models.Doctor.objects.filter(status=True, is_approved=True),
-        empty_label="Select Doctor",
-        to_field_name="user_id",
-        label="Doctor"
-    )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Safely filter doctors based on available fields
+        try:
+            doctors = models.Doctor.objects.filter(status=True, is_approved=True)
+        except:
+            doctors = models.Doctor.objects.filter(status=True)
+        
+        self.fields['doctorId'] = forms.ModelChoiceField(
+            queryset=doctors,
+            empty_label="Select Doctor",
+            to_field_name="user_id",
+            label="Doctor"
+        )
 
     class Meta:
         model = models.Appointment
