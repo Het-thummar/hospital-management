@@ -41,12 +41,12 @@ def patientlogin(request):
             try:
                 patient = Patient.objects.get(user=user)
                 login(request, user)
-                messages.success(request, 'Login successful!')
+                request.session['alert_message'] = 'Login successful!'
                 return redirect('patient-dashboard')
             except Patient.DoesNotExist:
-                messages.error(request, 'You are not registered as a patient.')
+                request.session['alert_message'] = 'You are not registered as a patient.'
         else:
-            messages.error(request, 'Invalid username or password.')
+            request.session['alert_message'] = 'Invalid username or password.'
     return render(request, 'hospital/patientlogin.html')
 
 def patientsignup(request):
@@ -59,11 +59,10 @@ def patientsignup(request):
             patient.user = user
             patient.save()
             login(request, user)
-            print(f"Patient {user.username} signed up and logged in.")
+            request.session['alert_message'] = 'Signup successful!'
             return redirect('patient-dashboard')
         else:
-            print("Signup form invalid.")
-            messages.error(request, 'Please correct the errors below.')
+            request.session['alert_message'] = 'Please correct the errors below.'
     else:
         user_form = BaseUserForm()
         patient_form = PatientForm()
@@ -79,10 +78,10 @@ def adminlogin(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            messages.success(request, 'Login successful!')
+            request.session['alert_message'] = 'Login successful!'
             return redirect('admin-dashboard')
         else:
-            messages.error(request, 'Invalid username or password.')
+            request.session['alert_message'] = 'Invalid username or password.'
     return render(request, 'hospital/adminlogin.html')
 
 def adminsignup(request):
@@ -93,11 +92,10 @@ def adminsignup(request):
             # Create admin approval entry
             AdminApproval.objects.create(user=user, is_approved=False)
             login(request, user)
-            print(f"Admin {user.username} signed up and logged in.")
+            request.session['alert_message'] = 'Signup successful!'
             return redirect('admin-dashboard')
         else:
-            print("Admin signup form invalid.")
-            messages.error(request, 'Please correct the errors below.')
+            request.session['alert_message'] = 'Please correct the errors below.'
     else:
         form = AdminSigupForm()
     return render(request, 'hospital/adminsignup.html', {'form': form})
@@ -111,12 +109,12 @@ def doctorlogin(request):
             try:
                 doctor = Doctor.objects.get(user=user)
                 login(request, user)
-                messages.success(request, 'Login successful!')
+                request.session['alert_message'] = 'Login successful!'
                 return redirect('doctor-dashboard')
             except Doctor.DoesNotExist:
-                messages.error(request, 'You are not registered as a doctor.')
+                request.session['alert_message'] = 'You are not registered as a doctor.'
         else:
-            messages.error(request, 'Invalid username or password.')
+            request.session['alert_message'] = 'Invalid username or password.'
     return render(request, 'hospital/doctorlogin.html')
 
 def doctorsignup(request):
@@ -129,11 +127,10 @@ def doctorsignup(request):
             doctor.user = user
             doctor.save()
             login(request, user)
-            print(f"Doctor {user.username} signed up and logged in.")
+            request.session['alert_message'] = 'Signup successful!'
             return redirect('doctor-dashboard')
         else:
-            print("Doctor signup form invalid.")
-            messages.error(request, 'Please correct the errors below.')
+            request.session['alert_message'] = 'Please correct the errors below.'
     else:
         user_form = DoctorUserForm()
         doctor_form = DoctorForm()
@@ -153,9 +150,10 @@ def patient_dashboard(request):
             'patient': patient,
             'appointments': appointments,
         }
+        context['alert_message'] = request.session.pop('alert_message', None)
         return render(request, 'hospital/patient_dashboard.html', context)
     except Patient.DoesNotExist:
-        messages.error(request, 'Patient profile not found. Please contact support.')
+        request.session['alert_message'] = 'Patient profile not found. Please contact support.'
         return redirect('patientlogin')
 
 @login_required
@@ -189,7 +187,7 @@ def book_appointment(request):
 def admin_dashboard(request):
     if not (request.user.is_superuser or request.user.groups.filter(name='Admin').exists() or 
             AdminApproval.objects.filter(user=request.user, is_approved=True).exists()):
-        messages.error(request, 'Access denied. Admin privileges required.')
+        request.session['alert_message'] = 'Access denied. Admin privileges required.'
         return redirect('home')
     
     total_doctors = Doctor.objects.count()
@@ -205,13 +203,14 @@ def admin_dashboard(request):
         'pending_doctor_approvals': pending_doctor_approvals,
         'pending_admin_approvals': pending_admin_approvals,
     }
+    context['alert_message'] = request.session.pop('alert_message', None)
     return render(request, 'hospital/admin_dashboard.html', context)
 
 @login_required
 def admin_doctors(request):
     if not (request.user.is_superuser or request.user.groups.filter(name='Admin').exists() or 
             AdminApproval.objects.filter(user=request.user, is_approved=True).exists()):
-        messages.error(request, 'Access denied. Admin privileges required.')
+        request.session['alert_message'] = 'Access denied. Admin privileges required.'
         return redirect('home')
     
     doctors = Doctor.objects.all().order_by('-id')
@@ -221,7 +220,7 @@ def admin_doctors(request):
 def admin_patients(request):
     if not (request.user.is_superuser or request.user.groups.filter(name='Admin').exists() or 
             AdminApproval.objects.filter(user=request.user, is_approved=True).exists()):
-        messages.error(request, 'Access denied. Admin privileges required.')
+        request.session['alert_message'] = 'Access denied. Admin privileges required.'
         return redirect('home')
     
     patients = Patient.objects.all().order_by('-id')
@@ -231,7 +230,7 @@ def admin_patients(request):
 def admin_appointments(request):
     if not (request.user.is_superuser or request.user.groups.filter(name='Admin').exists() or 
             AdminApproval.objects.filter(user=request.user, is_approved=True).exists()):
-        messages.error(request, 'Access denied. Admin privileges required.')
+        request.session['alert_message'] = 'Access denied. Admin privileges required.'
         return redirect('home')
     
     appointments = Appointment.objects.all().order_by('-createdDate')
@@ -241,7 +240,7 @@ def admin_appointments(request):
 def admin_pending_approvals(request):
     if not (request.user.is_superuser or request.user.groups.filter(name='Admin').exists() or 
             AdminApproval.objects.filter(user=request.user, is_approved=True).exists()):
-        messages.error(request, 'Access denied. Admin privileges required.')
+        request.session['alert_message'] = 'Access denied. Admin privileges required.'
         return redirect('home')
     
     pending_doctors = Doctor.objects.filter(is_approved=False)
@@ -251,6 +250,7 @@ def admin_pending_approvals(request):
         'pending_doctors': pending_doctors,
         'pending_admins': pending_admins,
     }
+    context['alert_message'] = request.session.pop('alert_message', None)
     return render(request, 'hospital/admin_pending_approvals.html', context)
 
 # Admin Action Views
@@ -258,7 +258,7 @@ def admin_pending_approvals(request):
 def approve_appointment(request, appointment_id):
     if not (request.user.is_superuser or request.user.groups.filter(name='Admin').exists() or 
             AdminApproval.objects.filter(user=request.user, is_approved=True).exists()):
-        messages.error(request, 'Access denied. Admin privileges required.')
+        request.session['alert_message'] = 'Access denied. Admin privileges required.'
         return redirect('home')
     
     appointment = get_object_or_404(Appointment, id=appointment_id)
@@ -272,7 +272,7 @@ def approve_appointment(request, appointment_id):
 def delete_appointment(request, appointment_id):
     if not (request.user.is_superuser or request.user.groups.filter(name='Admin').exists() or 
             AdminApproval.objects.filter(user=request.user, is_approved=True).exists()):
-        messages.error(request, 'Access denied. Admin privileges required.')
+        request.session['alert_message'] = 'Access denied. Admin privileges required.'
         return redirect('home')
     
     appointment = get_object_or_404(Appointment, id=appointment_id)
@@ -286,7 +286,7 @@ def delete_appointment(request, appointment_id):
 def approve_doctor(request, doctor_id):
     if not (request.user.is_superuser or request.user.groups.filter(name='Admin').exists() or 
             AdminApproval.objects.filter(user=request.user, is_approved=True).exists()):
-        messages.error(request, 'Access denied. Admin privileges required.')
+        request.session['alert_message'] = 'Access denied. Admin privileges required.'
         return redirect('home')
     
     doctor = get_object_or_404(Doctor, id=doctor_id)
@@ -302,7 +302,7 @@ def approve_doctor(request, doctor_id):
 def reject_doctor(request, doctor_id):
     if not (request.user.is_superuser or request.user.groups.filter(name='Admin').exists() or 
             AdminApproval.objects.filter(user=request.user, is_approved=True).exists()):
-        messages.error(request, 'Access denied. Admin privileges required.')
+        request.session['alert_message'] = 'Access denied. Admin privileges required.'
         return redirect('home')
     
     doctor = get_object_or_404(Doctor, id=doctor_id)
@@ -315,7 +315,7 @@ def reject_doctor(request, doctor_id):
 @login_required
 def approve_admin(request, admin_id):
     if not request.user.is_superuser:
-        messages.error(request, 'Access denied. Super admin privileges required.')
+        request.session['alert_message'] = 'Access denied. Super admin privileges required.'
         return redirect('home')
     
     admin_approval = get_object_or_404(AdminApproval, id=admin_id)
@@ -334,7 +334,7 @@ def approve_admin(request, admin_id):
 @login_required
 def reject_admin(request, admin_id):
     if not request.user.is_superuser:
-        messages.error(request, 'Access denied. Super admin privileges required.')
+        request.session['alert_message'] = 'Access denied. Super admin privileges required.'
         return redirect('home')
     
     admin_approval = get_object_or_404(AdminApproval, id=admin_id)
@@ -361,10 +361,11 @@ def doctor_dashboard(request):
             'pending_appointments': pending_appointments,
             'accepted_appointments': accepted_appointments,
         }
+        context['alert_message'] = request.session.pop('alert_message', None)
         return render(request, 'hospital/doctor_dashboard.html', context)
     except Doctor.DoesNotExist:
-        messages.error(request, 'Doctor profile not found.')
-        return redirect('home')
+        request.session['alert_message'] = 'Doctor profile not found. Please contact support.'
+        return redirect('doctorlogin')
 
 @login_required
 def accept_appointment(request, appointment_id):

@@ -157,5 +157,8 @@
     </div>
 
     {% include "hospital/footer.html" %}
+    {% if alert_message %}
+    <script>alert("{{ alert_message|escapejs }}");</script>
+    {% endif %}
 </body>
 </html> 
