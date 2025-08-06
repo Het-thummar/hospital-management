@@ -67,14 +67,15 @@ def patientsignup(request):
     if request.method == 'POST':
         user_form = BaseUserForm(request.POST)
         patient_form = PatientForm(request.POST, request.FILES)
-        
         if user_form.is_valid() and patient_form.is_valid():
             user = user_form.save()
-            
             patient = patient_form.save(commit=False)
             patient.user = user
             patient.save()
-            
+            # If patient is auto-approved, log in and redirect to dashboard
+            if patient.status:
+                login(request, user)
+                return redirect('patient-dashboard')
             messages.success(request, 'Registration successful! Please wait for admin approval.')
             return redirect('patientlogin')
         else:
@@ -82,7 +83,6 @@ def patientsignup(request):
     else:
         user_form = BaseUserForm()
         patient_form = PatientForm()
-    
     return render(request, 'hospital/patientsignup.html', {
         'userForm': user_form,
         'patientForm': patient_form
