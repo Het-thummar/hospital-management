@@ -27,13 +27,11 @@ urlpatterns = [
     path('contactus/', views.contactus, name='contactus'),
     
     # Patient URLs
-    path('patientlogin/', views.patientlogin, name='patientlogin'),
     path('patientsignup/', views.patientsignup, name='patientsignup'),
     path('patient-dashboard/', views.patient_dashboard, name='patient-dashboard'),
     path('book-appointment/', views.book_appointment, name='book-appointment'),
     
     # Admin URLs
-    path('adminlogin/', views.adminlogin, name='adminlogin'),
     path('adminsignup/', views.adminsignup, name='adminsignup'),
     path('admin-dashboard/', views.admin_dashboard, name='admin-dashboard'),
     path('admin-doctors/', views.admin_doctors, name='admin-doctors'),
@@ -50,7 +48,6 @@ urlpatterns = [
     path('reject-admin/<int:admin_id>/', views.reject_admin, name='reject-admin'),
     
     # Doctor URLs
-    path('doctorlogin/', views.doctorlogin, name='doctorlogin'),
     path('doctorsignup/', views.doctorsignup, name='doctorsignup'),
     path('doctor-dashboard/', views.doctor_dashboard, name='doctor-dashboard'),
     path('accept-appointment/<int:appointment_id>/', views.accept_appointment, name='accept-appointment'),
@@ -62,6 +59,7 @@ urlpatterns = [
     
     # Logout
     path('logout/', views.logout_view, name='logout'),
+    path('login/', views.universal_login, name='universal-login'),
 ]
 
 # Add static files serving during development

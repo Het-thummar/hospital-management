@@ -168,6 +168,37 @@ def doctorsignup(request):
         'doctorForm': doctor_form
     })
 
+def universal_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            # Admin check
+            if user.is_superuser or user.groups.filter(name='Admin').exists():
+                login(request, user)
+                return redirect('admin-dashboard')
+            # Doctor check
+            try:
+                doctor = Doctor.objects.get(user=user)
+                if doctor.is_approved and doctor.status:
+                    login(request, user)
+                    return redirect('doctor-dashboard')
+            except Doctor.DoesNotExist:
+                pass
+            # Patient check
+            try:
+                patient = Patient.objects.get(user=user)
+                if patient.status:
+                    login(request, user)
+                    return redirect('patient-dashboard')
+            except Patient.DoesNotExist:
+                pass
+            messages.error(request, 'Your account is not approved or does not have a valid role.')
+        else:
+            messages.error(request, 'Invalid username or password.')
+    return render(request, 'hospital/universal_login.html')
+
 # Patient Views
 @login_required
 def patient_dashboard(request):
