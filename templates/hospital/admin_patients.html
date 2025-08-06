@@ -114,18 +114,27 @@
                                     {% endif %}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{{ patient.admitDate }}</div>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ patient.admitDate }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                {% if patient.status %}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {% if patient.is_approved %}
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        Active
+                                        Approved
                                     </span>
                                 {% else %}
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                        Inactive
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                        Pending
                                     </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                {% if not patient.is_approved %}
+                                    <a href="{% url 'approve-patient' patient.id %}" class="text-green-600 hover:text-green-900">
+                                        Approve
+                                    </a>
+                                {% else %}
+                                    <span class="text-gray-400">Already Approved</span>
                                 {% endif %}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">

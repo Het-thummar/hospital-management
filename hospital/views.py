@@ -12,6 +12,7 @@ from .forms import (
     DoctorScheduleForm, ContactusForm, AdminApprovalForm
 )
 from .models import Doctor, Patient, Appointment, PatientDischargeDetails, AdminApproval
+from django.utils import timezone
 
 # Create your views here.
 def home(request):
@@ -343,6 +344,43 @@ def reject_admin(request, admin_id):
     
     messages.success(request, f'Admin {admin_name} rejected and removed successfully.')
     return redirect('admin-pending-approvals')
+
+@login_required
+def approve_patient(request, patient_id):
+    if not (request.user.is_superuser or request.user.groups.filter(name='Admin').exists() or 
+            AdminApproval.objects.filter(user=request.user, is_approved=True).exists() or
+            Doctor.objects.filter(user=request.user, is_approved=True).exists()):
+        request.session['alert_message'] = 'Access denied. Admin or Doctor privileges required.'
+        return redirect('home')
+    
+    patient = get_object_or_404(Patient, id=patient_id)
+    if request.method == 'POST':
+        # Set approval fields
+        patient.is_approved = True
+        patient.approved_by = request.user
+        patient.approved_at = timezone.now()
+        patient.save()
+        
+        # Create appointment if date and time are provided
+        appointment_date = request.POST.get('appointment_date')
+        appointment_time = request.POST.get('appointment_time')
+        if appointment_date and appointment_time:
+            Appointment.objects.create(
+                patientId=patient.user.id,
+                doctorId=request.user.id if hasattr(request.user, 'doctor') else None,
+                patientName=patient.get_name,
+                doctorName=request.user.get_full_name(),
+                appointmentDate=appointment_date,
+                appointmentTime=appointment_time,
+                status=True
+            )
+            request.session['alert_message'] = f'Patient {patient.get_name} approved and appointment scheduled for {appointment_date} at {appointment_time}.'
+        else:
+            request.session['alert_message'] = f'Patient {patient.get_name} approved successfully.'
+        
+        return redirect('admin-dashboard')
+    
+    return render(request, 'hospital/approve_patient.html', {'patient': patient})
 
 # Doctor Views
 @login_required
