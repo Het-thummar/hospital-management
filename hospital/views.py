@@ -41,10 +41,13 @@ def patientlogin(request):
             try:
                 patient = Patient.objects.get(user=user)
                 login(request, user)
+                print(f"Patient {user.username} logged in successfully.")
                 return redirect('patient-dashboard')
             except Patient.DoesNotExist:
+                print(f"User {user.username} is not a patient.")
                 messages.error(request, 'You are not registered as a patient.')
         else:
+            print("Invalid username or password.")
             messages.error(request, 'Invalid username or password.')
     return render(request, 'hospital/patientlogin.html')
 
@@ -58,8 +61,10 @@ def patientsignup(request):
             patient.user = user
             patient.save()
             login(request, user)
+            print(f"Patient {user.username} signed up and logged in.")
             return redirect('patient-dashboard')
         else:
+            print("Signup form invalid.")
             messages.error(request, 'Please correct the errors below.')
     else:
         user_form = BaseUserForm()
@@ -76,8 +81,10 @@ def adminlogin(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            print(f"Admin {user.username} logged in successfully.")
             return redirect('admin-dashboard')
         else:
+            print("Invalid username or password.")
             messages.error(request, 'Invalid username or password.')
     return render(request, 'hospital/adminlogin.html')
 
@@ -89,8 +96,10 @@ def adminsignup(request):
             # Create admin approval entry
             AdminApproval.objects.create(user=user, is_approved=False)
             login(request, user)
+            print(f"Admin {user.username} signed up and logged in.")
             return redirect('admin-dashboard')
         else:
+            print("Admin signup form invalid.")
             messages.error(request, 'Please correct the errors below.')
     else:
         form = AdminSigupForm()
@@ -105,10 +114,13 @@ def doctorlogin(request):
             try:
                 doctor = Doctor.objects.get(user=user)
                 login(request, user)
+                print(f"Doctor {user.username} logged in successfully.")
                 return redirect('doctor-dashboard')
             except Doctor.DoesNotExist:
+                print(f"User {user.username} is not a doctor.")
                 messages.error(request, 'You are not registered as a doctor.')
         else:
+            print("Invalid username or password.")
             messages.error(request, 'Invalid username or password.')
     return render(request, 'hospital/doctorlogin.html')
 
@@ -122,8 +134,10 @@ def doctorsignup(request):
             doctor.user = user
             doctor.save()
             login(request, user)
+            print(f"Doctor {user.username} signed up and logged in.")
             return redirect('doctor-dashboard')
         else:
+            print("Doctor signup form invalid.")
             messages.error(request, 'Please correct the errors below.')
     else:
         user_form = DoctorUserForm()
@@ -146,8 +160,8 @@ def patient_dashboard(request):
         }
         return render(request, 'hospital/patient_dashboard.html', context)
     except Patient.DoesNotExist:
-        messages.error(request, 'Patient profile not found.')
-        return redirect('home')
+        messages.error(request, 'Patient profile not found. Please contact support.')
+        return redirect('patientlogin')
 
 @login_required
 def book_appointment(request):
