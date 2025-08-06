@@ -190,21 +190,26 @@ def book_appointment(request):
 # Admin Views
 @login_required
 def admin_dashboard(request):
-    if not (request.user.is_superuser or request.user.groups.filter(name='Admin').exists() or 
+    if not (request.user.is_superuser or request.user.groups.filter(name='Admin').exists() or \
             AdminApproval.objects.filter(user=request.user, is_approved=True).exists()):
         request.session['alert_message'] = 'Access denied. Admin privileges required.'
         return redirect('home')
-    
     total_doctors = Doctor.objects.count()
     total_patients = Patient.objects.count()
     total_appointments = Appointment.objects.count()
+    pending_appointments = Appointment.objects.filter(status=False).count()
+    approved_appointments = Appointment.objects.filter(status=True).count()
+    # If you have a cancelled field, use it; otherwise, set to 0
+    cancelled_appointments = Appointment.objects.filter(status=False, appointmentDate__lt=date.today()).count()  # Example logic
     pending_doctor_approvals = Doctor.objects.filter(is_approved=False).count()
     pending_admin_approvals = AdminApproval.objects.filter(is_approved=False).count()
-    
     context = {
         'total_doctors': total_doctors,
         'total_patients': total_patients,
         'total_appointments': total_appointments,
+        'pending_appointments': pending_appointments,
+        'approved_appointments': approved_appointments,
+        'cancelled_appointments': cancelled_appointments,
         'pending_doctor_approvals': pending_doctor_approvals,
         'pending_admin_approvals': pending_admin_approvals,
     }
@@ -261,17 +266,30 @@ def admin_pending_approvals(request):
 # Admin Action Views
 @login_required
 def approve_appointment(request, appointment_id):
-    if not (request.user.is_superuser or request.user.groups.filter(name='Admin').exists() or 
+    if not (request.user.is_superuser or request.user.groups.filter(name='Admin').exists() or \
             AdminApproval.objects.filter(user=request.user, is_approved=True).exists()):
         request.session['alert_message'] = 'Access denied. Admin privileges required.'
         return redirect('home')
-    
     appointment = get_object_or_404(Appointment, id=appointment_id)
-    appointment.status = True
-    appointment.save()
-    
-    messages.success(request, f'Appointment for {appointment.patientName} approved successfully.')
-    return redirect('admin-appointments')
+    if request.method == 'POST':
+        appointment_date = request.POST.get('appointment_date')
+        appointment_time = request.POST.get('appointment_time')
+        if not appointment_date or not appointment_time:
+            request.session['alert_message'] = 'Appointment date and time are required.'
+            return render(request, 'hospital/approve_appointment.html', {
+                'appointment': appointment,
+                'today_date': date.today().isoformat()
+            })
+        appointment.appointmentDate = appointment_date
+        appointment.appointmentTime = appointment_time
+        appointment.status = True
+        appointment.save()
+        request.session['alert_message'] = f'Appointment for {appointment.patientName} approved and scheduled for {appointment_date} at {appointment_time}.'
+        return redirect('admin-appointments')
+    return render(request, 'hospital/approve_appointment.html', {
+        'appointment': appointment,
+        'today_date': date.today().isoformat()
+    })
 
 @login_required
 def delete_appointment(request, appointment_id):
