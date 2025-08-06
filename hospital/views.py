@@ -75,27 +75,8 @@ def adminlogin(request):
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            # Admin check
-            if user.is_superuser or user.groups.filter(name='Admin').exists():
-                login(request, user)
-                return redirect('admin-dashboard')
-            # Doctor check
-            try:
-                doctor = Doctor.objects.get(user=user)
-                if doctor.is_approved and doctor.status:
-                    login(request, user)
-                    return redirect('doctor-dashboard')
-            except Doctor.DoesNotExist:
-                pass
-            # Patient check
-            try:
-                patient = Patient.objects.get(user=user)
-                if patient.status:
-                    login(request, user)
-                    return redirect('patient-dashboard')
-            except Patient.DoesNotExist:
-                pass
-            messages.error(request, 'Your account is not approved or does not have a valid role.')
+            login(request, user)
+            return redirect('admin-dashboard')
         else:
             messages.error(request, 'Invalid username or password.')
     return render(request, 'hospital/adminlogin.html')
@@ -103,20 +84,16 @@ def adminlogin(request):
 def adminsignup(request):
     if request.method == 'POST':
         form = AdminSigupForm(request.POST)
-        
         if form.is_valid():
             user = form.save()
-            
             # Create admin approval entry
             AdminApproval.objects.create(user=user, is_approved=False)
-            
-            messages.success(request, 'Admin registration successful! Please wait for super admin approval.')
-            return redirect('adminlogin')
+            login(request, user)
+            return redirect('admin-dashboard')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         form = AdminSigupForm()
-    
     return render(request, 'hospital/adminsignup.html', {'form': form})
 
 def doctorlogin(request):
@@ -125,27 +102,12 @@ def doctorlogin(request):
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            # Admin check
-            if user.is_superuser or user.groups.filter(name='Admin').exists():
-                login(request, user)
-                return redirect('admin-dashboard')
-            # Doctor check
             try:
                 doctor = Doctor.objects.get(user=user)
-                if doctor.is_approved and doctor.status:
-                    login(request, user)
-                    return redirect('doctor-dashboard')
+                login(request, user)
+                return redirect('doctor-dashboard')
             except Doctor.DoesNotExist:
-                pass
-            # Patient check
-            try:
-                patient = Patient.objects.get(user=user)
-                if patient.status:
-                    login(request, user)
-                    return redirect('patient-dashboard')
-            except Patient.DoesNotExist:
-                pass
-            messages.error(request, 'Your account is not approved or does not have a valid role.')
+                messages.error(request, 'You are not registered as a doctor.')
         else:
             messages.error(request, 'Invalid username or password.')
     return render(request, 'hospital/doctorlogin.html')
@@ -154,22 +116,18 @@ def doctorsignup(request):
     if request.method == 'POST':
         user_form = DoctorUserForm(request.POST)
         doctor_form = DoctorForm(request.POST, request.FILES)
-        
         if user_form.is_valid() and doctor_form.is_valid():
             user = user_form.save()
-            
             doctor = doctor_form.save(commit=False)
             doctor.user = user
             doctor.save()
-            
-            messages.success(request, 'Doctor registration successful! Please wait for admin approval.')
-            return redirect('doctorlogin')
+            login(request, user)
+            return redirect('doctor-dashboard')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         user_form = DoctorUserForm()
         doctor_form = DoctorForm()
-    
     return render(request, 'hospital/doctorsignup.html', {
         'userForm': user_form,
         'doctorForm': doctor_form
