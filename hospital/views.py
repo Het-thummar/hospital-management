@@ -367,7 +367,10 @@ def approve_patient(request, patient_id):
         appointment_time = request.POST.get('appointment_time')
         if not appointment_date or not appointment_time:
             request.session['alert_message'] = 'Appointment date and time are required.'
-            return render(request, 'hospital/approve_patient.html', {'patient': patient})
+            return render(request, 'hospital/approve_patient.html', {
+                'patient': patient,
+                'today_date': date.today().isoformat()
+            })
         # Set approval fields
         patient.is_approved = True
         patient.approved_by = request.user
@@ -385,7 +388,11 @@ def approve_patient(request, patient_id):
         )
         request.session['alert_message'] = f'Patient {patient.get_name} approved and appointment scheduled for {appointment_date} at {appointment_time}.'
         return redirect('admin-dashboard')
-    return render(request, 'hospital/approve_patient.html', {'patient': patient})
+    
+    return render(request, 'hospital/approve_patient.html', {
+        'patient': patient,
+        'today_date': date.today().isoformat()
+    })
 
 # Doctor Views
 @login_required
