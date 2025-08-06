@@ -78,6 +78,20 @@
                             </div>
                         </div>
                     </div>
+                {% else %}
+                    <div class="bg-red-100 border border-red-200 rounded-lg p-4 mb-8">
+                        <div class="flex items-center">
+                            <svg class="h-5 w-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            <div>
+                                <h3 class="text-sm font-medium text-red-800">No Appointment Found</h3>
+                                <p class="text-sm text-red-700">
+                                    No appointment has been scheduled yet. Please contact the hospital.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 {% endif %}
             {% endwith %}
         {% else %}

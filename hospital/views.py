@@ -390,7 +390,13 @@ def approve_patient(request, patient_id):
                 appointmentTime=appointment_time,
                 status=True
             )
-            
+            print(f"DEBUG: Created appointment for patient {patient.get_name()} on {appointment_date} at {appointment_time}")
+            if not appointment:
+                request.session['alert_message'] = 'Error: Appointment was not created.'
+                return render(request, 'hospital/approve_patient.html', {
+                    'patient': patient,
+                    'today_date': date.today().isoformat()
+                })
             request.session['alert_message'] = f'Patient {patient.get_name} approved and appointment scheduled for {appointment_date} at {appointment_time}.'
             return redirect('admin-dashboard')
             
