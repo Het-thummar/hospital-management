@@ -118,7 +118,7 @@
                                 {{ patient.admitDate }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {% if patient.is_approved %}
+                                {% if patient.status %}
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                         Approved
                                     </span>
@@ -129,7 +129,7 @@
                                 {% endif %}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                {% if not patient.is_approved %}
+                                {% if not patient.status %}
                                     <a href="{% url 'approve-patient' patient.id %}" class="text-green-600 hover:text-green-900">
                                         Approve
                                     </a>

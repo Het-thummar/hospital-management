@@ -358,36 +358,48 @@ def approve_patient(request, patient_id):
         return redirect('home')
     
     patient = get_object_or_404(Patient, id=patient_id)
-    if patient.is_approved:
+    
+    # Check if patient is already approved (using existing status field)
+    if patient.status:
         request.session['alert_message'] = f'Patient {patient.get_name} is already approved.'
         return redirect('admin-dashboard')
     
     if request.method == 'POST':
         appointment_date = request.POST.get('appointment_date')
         appointment_time = request.POST.get('appointment_time')
+        
         if not appointment_date or not appointment_time:
             request.session['alert_message'] = 'Appointment date and time are required.'
             return render(request, 'hospital/approve_patient.html', {
                 'patient': patient,
                 'today_date': date.today().isoformat()
             })
-        # Set approval fields
-        patient.is_approved = True
-        patient.approved_by = request.user
-        patient.approved_at = timezone.now()
-        patient.save()
-        # Create appointment
-        Appointment.objects.create(
-            patientId=patient.user.id,
-            doctorId=request.user.id if hasattr(request.user, 'doctor') else None,
-            patientName=patient.get_name,
-            doctorName=request.user.get_full_name(),
-            appointmentDate=appointment_date,
-            appointmentTime=appointment_time,
-            status=True
-        )
-        request.session['alert_message'] = f'Patient {patient.get_name} approved and appointment scheduled for {appointment_date} at {appointment_time}.'
-        return redirect('admin-dashboard')
+        
+        try:
+            # Set patient as approved using existing status field
+            patient.status = True
+            patient.save()
+            
+            # Create appointment
+            appointment = Appointment.objects.create(
+                patientId=patient.user.id,
+                doctorId=request.user.id if hasattr(request.user, 'doctor') else None,
+                patientName=patient.get_name,
+                doctorName=request.user.get_full_name(),
+                appointmentDate=appointment_date,
+                appointmentTime=appointment_time,
+                status=True
+            )
+            
+            request.session['alert_message'] = f'Patient {patient.get_name} approved and appointment scheduled for {appointment_date} at {appointment_time}.'
+            return redirect('admin-dashboard')
+            
+        except Exception as e:
+            request.session['alert_message'] = f'Error approving patient: {str(e)}'
+            return render(request, 'hospital/approve_patient.html', {
+                'patient': patient,
+                'today_date': date.today().isoformat()
+            })
     
     return render(request, 'hospital/approve_patient.html', {
         'patient': patient,
