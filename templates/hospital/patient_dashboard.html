@@ -49,8 +49,6 @@
         </div>
 
         <!-- Approval Status -->
-        <!-- Temporarily disabled until database migration is complete -->
-        <!--
         {% if patient.is_approved %}
             <div class="bg-green-100 border border-green-200 rounded-lg p-4 mb-8">
                 <div class="flex items-center">
@@ -69,6 +67,23 @@
                     </div>
                 </div>
             </div>
+            {% with appointment=appointments.0 %}
+                {% if appointment and appointment.appointmentDate and appointment.appointmentTime %}
+                    <div class="bg-blue-100 border border-blue-200 rounded-lg p-4 mb-8">
+                        <div class="flex items-center">
+                            <svg class="h-5 w-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <div>
+                                <h3 class="text-sm font-medium text-blue-800">Appointment Scheduled</h3>
+                                <p class="text-sm text-blue-700">
+                                    Your appointment is scheduled for {{ appointment.appointmentDate }} at {{ appointment.appointmentTime }}.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endwith %}
         {% else %}
             <div class="bg-yellow-100 border border-yellow-200 rounded-lg p-4 mb-8">
                 <div class="flex items-center">
@@ -82,7 +97,6 @@
                 </div>
             </div>
         {% endif %}
-        -->
 
         <!-- Quick Actions -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
