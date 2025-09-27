@@ -25,12 +25,12 @@
 
         <!-- Stats -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 gap-4">
                 <div class="text-center">
                     <p class="text-2xl font-bold text-blue-600">{{ appointments.count }}</p>
                     <p class="text-sm text-gray-600">Total Appointments</p>
                 </div>
-                <div class="text-center">
+                {% comment %} <div class="text-center">
                     <p class="text-2xl font-bold text-yellow-600">{{ appointments|length }}</p>
                     <p class="text-sm text-gray-600">Pending</p>
                 </div>
@@ -41,7 +41,7 @@
                 <div class="text-center">
                     <p class="text-2xl font-bold text-red-600">{{ appointments|length }}</p>
                     <p class="text-sm text-gray-600">Cancelled</p>
-                </div>
+                </div> {% endcomment %}
             </div>
         </div>
 

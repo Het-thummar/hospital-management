@@ -102,13 +102,13 @@
               </div>
 
               <!-- Profile Picture -->
-              <div>
+              {% comment %} <div>
                 <label for="{{ doctorForm.profile_pic.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Profile Picture</label>
                 {{ doctorForm.profile_pic }}
                 {% if doctorForm.profile_pic.errors %}
                   <div class="text-red-600 text-sm mt-1">{{ doctorForm.profile_pic.errors.0 }}</div>
                 {% endif %}
-              </div>
+              </div> {% endcomment %}
             </div>
           </div>
 
